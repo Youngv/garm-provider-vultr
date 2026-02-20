@@ -12,9 +12,11 @@ module GarmProviderVultr
       when "stopped" then GarmProvider::InstanceStatus::Stopped
       else                GarmProvider::InstanceStatus::Running
       end
-    when "pending"   then GarmProvider::InstanceStatus::Creating
+      # garm only accepts running/stopped/error/unknown from providers.
+      # Lifecycle states (creating/deleting/etc) are managed by garm itself.
+    when "pending"   then GarmProvider::InstanceStatus::Running
     when "suspended" then GarmProvider::InstanceStatus::Stopped
-    when "resizing"  then GarmProvider::InstanceStatus::Creating
+    when "resizing"  then GarmProvider::InstanceStatus::Running
     else                  GarmProvider::InstanceStatus::Unknown
     end
   end

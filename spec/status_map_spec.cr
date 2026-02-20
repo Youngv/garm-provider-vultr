@@ -13,9 +13,9 @@ describe GarmProviderVultr do
       status.should eq(GarmProvider::InstanceStatus::Stopped)
     end
 
-    it "maps pending to Creating" do
+    it "maps pending to Running" do
       status = GarmProviderVultr.map_vultr_status("pending", "")
-      status.should eq(GarmProvider::InstanceStatus::Creating)
+      status.should eq(GarmProvider::InstanceStatus::Running)
     end
 
     it "maps suspended to Stopped" do

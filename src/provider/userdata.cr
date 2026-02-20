@@ -10,7 +10,7 @@ module GarmProviderVultr
     def self.select_tool(tools : Array(GarmProvider::RunnerApplicationDownload), os_type : String, arch : String) : GarmProvider::RunnerApplicationDownload?
       # Normalize arch for matching
       normalized_arch = case arch.downcase
-                        when "amd64", "x86_64" then "x64"
+                        when "amd64", "x86_64"  then "x64"
                         when "arm64", "aarch64" then "arm64"
                         when "arm"              then "arm"
                         when "i386", "386"      then "x86"
@@ -79,6 +79,27 @@ module GarmProviderVultr
       extra_packages.each do |pkg|
         lines << "  - #{pkg}"
       end
+
+      # Create the runner user via cloud-init (mirrors garm-provider-common defaults)
+      lines << "users:"
+      lines << "  - default"
+      lines << "system_info:"
+      lines << "  default_user:"
+      lines << "    name: runner"
+      lines << "    home: /home/runner"
+      lines << "    shell: /bin/bash"
+      lines << "    groups:"
+      lines << "      - sudo"
+      lines << "      - adm"
+      lines << "      - cdrom"
+      lines << "      - dialout"
+      lines << "      - dip"
+      lines << "      - video"
+      lines << "      - plugdev"
+      lines << "      - netdev"
+      lines << "      - docker"
+      lines << "      - lxd"
+      lines << "    sudo: ALL=(ALL) NOPASSWD:ALL"
 
       unless ssh_keys.empty?
         lines << "ssh_authorized_keys:"

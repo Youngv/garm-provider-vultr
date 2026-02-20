@@ -257,6 +257,16 @@ module Vultr
       }
 
       tls = OpenSSL::SSL::Context::Client.new
+      # Static builds (musl/Alpine) may not auto-detect CA cert paths in minimal
+      # containers like busybox. Explicitly set well-known CA bundle locations.
+      ca_paths = [
+        "/etc/ssl/certs/ca-certificates.crt",
+        "/etc/pki/tls/certs/ca-bundle.crt",
+        "/etc/ssl/cert.pem",
+      ]
+      if ca_file = ca_paths.find { |p| File.exists?(p) }
+        tls.ca_certificates = ca_file
+      end
       client = HTTP::Client.new(@base_uri.host.not_nil!, port: 443, tls: tls)
       client.read_timeout = 30.seconds
       client.connect_timeout = 10.seconds

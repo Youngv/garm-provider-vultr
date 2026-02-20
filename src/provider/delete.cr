@@ -31,7 +31,8 @@ module GarmProviderVultr
         begin
           client.delete_instance(instance_id)
         rescue ex : Vultr::ApiError
-          if ex.not_found?
+          if ex.not_found? || ex.status_code == 400
+            # 404 = not found, 400 = invalid UUID format (garm-generated name)
             # Try finding by name in tagged instances
             controller_id = Env.controller_id
             all = client.list_instances(tag: "#{CONTROLLER_TAG_PREFIX}#{controller_id}")

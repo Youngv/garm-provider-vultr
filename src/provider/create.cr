@@ -73,7 +73,8 @@ module GarmProviderVultr
 
       # Convert to garm ProviderInstance
       result = GarmProviderVultr.vultr_to_garm_instance(vultr_instance)
-      # Override status to creating since the instance was just created
+      # garm only accepts running/stopped/error/unknown from providers.
+      # Lifecycle states like creating/deleting are managed by garm itself.
       result = GarmProvider::ProviderInstance.new(
         provider_id: result.provider_id,
         name: result.name,
@@ -82,7 +83,7 @@ module GarmProviderVultr
         os_version: result.os_version,
         os_arch: GarmProviderVultr.garm_arch_to_os_arch(bootstrap.arch),
         addresses: result.addresses,
-        status: GarmProvider::InstanceStatus::Creating,
+        status: GarmProvider::InstanceStatus::Running,
       )
 
       # Output JSON to stdout
