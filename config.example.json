@@ -1,0 +1,11 @@
+{
+  "api_key": "",
+  "region": "ewr",
+  "plan": "vc2-1c-1gb",
+  "os_id": 1743,
+  "sshkey_id": [],
+  "enable_ipv6": false,
+  "firewall_group_id": "",
+  "enable_vpc": false,
+  "attach_vpc": []
+}

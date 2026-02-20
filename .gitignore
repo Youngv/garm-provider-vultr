@@ -1,0 +1,16 @@
+# Crystal build artifacts
+/bin/
+/lib/
+/.shards/
+/shard.lock
+
+# Editor / IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
