@@ -2,8 +2,6 @@
 /bin/
 /lib/
 /.shards/
-/shard.lock
-
 # Editor / IDE
 .idea/
 .vscode/
