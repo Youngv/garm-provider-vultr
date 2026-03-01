@@ -22,7 +22,7 @@ jobs:
             -v ${{ github.workspace }}:/workspace \
             -w /workspace \
             crystallang/crystal:latest-alpine \
-            sh -c "shards install --production && crystal build src/main.cr -o bin/garm-provider-vultr --release --static --no-debug && strip bin/garm-provider-vultr"
+            sh -c "mkdir -p bin && shards install --production && crystal build src/main.cr -o bin/garm-provider-vultr --release --static --no-debug && strip bin/garm-provider-vultr"
 
       - name: Package binary
         run: |
