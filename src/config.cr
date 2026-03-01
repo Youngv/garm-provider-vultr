@@ -52,6 +52,18 @@ module GarmProviderVultr
     # Attach VPC IDs
     @[JSON::Field(key: "attach_vpc")]
     property attach_vpc : Array(String)? = nil
+
+    # Extra packages to install on the VM (e.g. ["docker.io"])
+    @[JSON::Field(key: "extra_packages")]
+    property extra_packages : Array(String)? = nil
+
+    # Disable OS updates on boot
+    @[JSON::Field(key: "disable_updates")]
+    property disable_updates : Bool? = nil
+
+    # Enable boot debug
+    @[JSON::Field(key: "enable_boot_debug")]
+    property enable_boot_debug : Bool? = nil
   end
 
   # ProviderConfig is the main config file structure (JSON format).
@@ -125,6 +137,9 @@ module GarmProviderVultr
     property attach_vpc : Array(String)
     property runner_install_template : String?
     property extra_context : Hash(String, String)?
+    property extra_packages : Array(String)
+    property disable_updates : Bool?
+    property enable_boot_debug : Bool?
 
     def initialize(config : ProviderConfig, extra : ExtraSpecs? = nil)
       @api_key = config.effective_api_key
@@ -139,6 +154,9 @@ module GarmProviderVultr
       @enable_vpc = extra.try(&.enable_vpc) || config.enable_vpc
       @attach_vpc = extra.try(&.attach_vpc) || config.attach_vpc
       @runner_install_template = extra.try(&.runner_install_template)
+      @extra_packages = extra.try(&.extra_packages) || [] of String
+      @disable_updates = extra.try(&.disable_updates)
+      @enable_boot_debug = extra.try(&.enable_boot_debug)
       @extra_context = extra.try(&.extra_context)
     end
 

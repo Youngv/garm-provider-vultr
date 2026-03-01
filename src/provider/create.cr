@@ -35,6 +35,19 @@ module GarmProviderVultr
       # Build tags for this instance
       tags = GarmProviderVultr.make_tags(controller_id, pool_id)
 
+      # Merge pool extra_specs into bootstrap user_data_options
+      # (GARM core does not populate UserDataOptions; each provider is responsible
+      # for extracting these from extra_specs, same as Azure/AWS/OCI/Equinix providers)
+      unless resolved.extra_packages.empty?
+        bootstrap.user_data_options.extra_packages = resolved.extra_packages
+      end
+      if resolved.disable_updates
+        bootstrap.user_data_options.disable_updates_on_boot = resolved.disable_updates.not_nil!
+      end
+      if resolved.enable_boot_debug
+        bootstrap.user_data_options.enable_boot_debug = resolved.enable_boot_debug.not_nil!
+      end
+
       # Generate cloud-init user data
       user_data = UserData.generate(bootstrap)
       encoded_user_data = Base64.strict_encode(user_data)
