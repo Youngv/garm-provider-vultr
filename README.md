@@ -12,8 +12,20 @@ This provider enables garm to manage GitHub Actions self-hosted runners on Vultr
 
 ## Building
 
+### Development build
+
 ```bash
 shards build --release
+```
+
+### Static build (for Docker / container deployment)
+
+The garm container does not have system libraries like `libz.so`. You must build a **statically linked** binary:
+
+```bash
+docker run --rm -v $(pwd):/workspace -w /workspace \
+  crystallang/crystal:latest-alpine \
+  sh -c "shards install --production && crystal build src/main.cr -o bin/garm-provider-vultr --release --static --no-debug && strip bin/garm-provider-vultr"
 ```
 
 The binary will be available at `bin/garm-provider-vultr`.
@@ -69,9 +81,28 @@ Per-pool overrides can be set in the garm pool configuration under `extra_specs`
   "enable_ipv6": true,
   "firewall_group_id": "fw-123",
   "enable_vpc": true,
-  "attach_vpc": ["vpc-1"]
+  "attach_vpc": ["vpc-1"],
+  "extra_packages": ["docker.io"],
+  "disable_updates": false,
+  "enable_boot_debug": false
 }
 ```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `region` | string | Override default Vultr region. |
+| `plan` | string | Override default instance plan. |
+| `os_id` | int | Override default OS template ID. |
+| `snapshot_id` | string | Use a Vultr snapshot instead of os_id. |
+| `image_id` | string | Use a Vultr marketplace image instead of os_id. |
+| `sshkey_id` | string[] | Override SSH key IDs. |
+| `enable_ipv6` | bool | Enable IPv6 on instances. |
+| `firewall_group_id` | string | Override firewall group ID. |
+| `enable_vpc` | bool | Enable VPC for instances. |
+| `attach_vpc` | string[] | VPC IDs to attach. |
+| `extra_packages` | string[] | Extra packages to install via cloud-init (e.g., `["docker.io"]`). |
+| `disable_updates` | bool | Disable OS updates on boot. |
+| `enable_boot_debug` | bool | Enable boot debug logging. |
 
 Pool extra_specs override the provider config defaults.
 

@@ -80,6 +80,55 @@ describe GarmProviderVultr::UserData do
       result.should contain("write_files:")
       result.should contain("runcmd:")
       result.should contain("install_runner.sh")
+      result.should contain("packages:")
+      result.should contain("  - curl")
+      result.should contain("  - tar")
+    end
+
+    it "includes extra_packages in cloud-config" do
+      json = %({
+        "name": "garm-test",
+        "tools": [{"os": "linux", "architecture": "x64",
+          "download_url": "https://example.com/runner.tar.gz",
+          "filename": "runner.tar.gz", "sha256_checksum": "abc",
+          "temp_download_token": ""}],
+        "repo_url": "https://github.com/test/repo",
+        "callback-url": "https://garm.example.com/api/v1/callbacks",
+        "metadata-url": "https://garm.example.com/api/v1/metadata",
+        "instance-token": "test-token",
+        "ssh-keys": [], "github-runner-group": "",
+        "os_type": "linux", "arch": "amd64", "flavor": "", "image": "",
+        "labels": ["test"], "pool_id": "pool-1", "jit_config_enabled": false
+      })
+
+      bootstrap = GarmProvider::BootstrapInstance.from_json(json)
+      bootstrap.user_data_options.extra_packages = ["docker.io", "jq"]
+      result = GarmProviderVultr::UserData.generate(bootstrap)
+
+      result.should contain("  - docker.io")
+      result.should contain("  - jq")
+    end
+
+    it "works without extra_packages" do
+      json = %({
+        "name": "garm-test",
+        "tools": [{"os": "linux", "architecture": "x64",
+          "download_url": "https://example.com/runner.tar.gz",
+          "filename": "runner.tar.gz", "sha256_checksum": "abc",
+          "temp_download_token": ""}],
+        "repo_url": "https://github.com/test/repo",
+        "callback-url": "https://garm.example.com/api/v1/callbacks",
+        "metadata-url": "https://garm.example.com/api/v1/metadata",
+        "instance-token": "test-token",
+        "ssh-keys": [], "github-runner-group": "",
+        "os_type": "linux", "arch": "amd64", "flavor": "", "image": "",
+        "labels": ["test"], "pool_id": "pool-1", "jit_config_enabled": false
+      })
+
+      bootstrap = GarmProvider::BootstrapInstance.from_json(json)
+      result = GarmProviderVultr::UserData.generate(bootstrap)
+
+      result.should_not contain("docker.io")
     end
   end
 end

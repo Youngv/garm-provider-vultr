@@ -16,7 +16,6 @@ module GarmProviderVultr
       controller_id = Env.controller_id
       pool_id = Env.pool_id
       config_file = Env.config_file
-      extra_specs = Env.pool_extra_specs
 
       # Read bootstrap params from stdin
       input = STDIN.gets_to_end
@@ -24,6 +23,16 @@ module GarmProviderVultr
 
       bootstrap = GarmProvider::BootstrapInstance.from_json(input)
       STDERR.puts "[create] creating instance name=#{bootstrap.name} pool=#{pool_id}"
+
+      # Parse extra_specs from bootstrap params (stdin JSON), same as official Go providers
+      extra_specs : ExtraSpecs? = nil
+      if bs_specs = bootstrap.extra_specs
+        begin
+          extra_specs = ExtraSpecs.from_json(bs_specs.to_json)
+        rescue ex
+          STDERR.puts "[create] failed to parse extra_specs: #{ex.message}"
+        end
+      end
 
       # Load and resolve config
       config = ProviderConfig.load(config_file)
