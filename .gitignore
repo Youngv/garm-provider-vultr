@@ -1,5 +1,6 @@
 # Crystal build artifacts
 /bin/
+/dist/
 /lib/
 /.shards/
 # Editor / IDE
